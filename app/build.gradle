@@ -4,18 +4,24 @@ plugins {
 
 android {
     namespace 'com.user.kwaihelper'
-    compileSdk 33
+    compileSdk 34 // 升级到 34 兼容性更好
 
     defaultConfig {
         applicationId "com.user.kwaihelper"
         minSdk 21
-        targetSdk 33
+        targetSdk 34
         versionCode 1
         versionName "1.0"
+    }
+
+    // 显式指定 Java 17 编译，防止云端环境混乱
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 }
 
 dependencies {
-    // 引入 Xposed 核心库，仅编译时调用
-    compileOnly 'de.robv.android.xposed:api:82'
+    // 换成这个更稳的库地址
+    compileOnly 'org.xposed:api:82'
 }
