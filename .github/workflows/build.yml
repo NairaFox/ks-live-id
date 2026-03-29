@@ -1,0 +1,45 @@
+name: 自动编译 APK
+
+on:
+  push:
+    branches: [ "main" ]
+
+env:
+  # 强制使用 Node 24 并允许老版插件运行，消除环境警告
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 获取最新代码
+      uses: actions/checkout@v4
+
+    - name: 配置 Java 环境
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: 设置并运行 Gradle
+      # 官方提供的神器：它会自动识别项目、下载对应版本的 Gradle、甚至自动处理 Android SDK 路径
+      uses: gradle/actions/setup-gradle@v3
+      with:
+        gradle-version: 8.4 # 强制指定 8.4 版本，完美适配你的 build.gradle
+
+    - name: 接受 Android SDK 协议
+      # 云端编译经常因为没点“同意协议”而挂掉，这一步是强制同意
+      run: yes | sdkmanager --licenses || true
+
+    - name: 执行正式编译
+      # 此时不需要安装 gradle 了，直接调用刚刚 setup-gradle 准备好的环境
+      run: gradle assembleDebug --no-daemon
+
+    - name: 提取并上传 APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: KwaiHelper-Final-Success
+        path: app/build/outputs/apk/debug/*.apk
+        if-no-files-found: error
