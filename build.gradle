@@ -4,12 +4,16 @@ buildscript {
         mavenCentral()
     }
     dependencies {
+        // 使用更稳定的插件版本
         classpath 'com.android.tools.build:gradle:8.1.1'
     }
 }
+
 allprojects {
     repositories {
         google()
         mavenCentral()
+        // 增加这个镜像，防止 Xposed 库下载失败
+        maven { url 'https://api.xposed.info/' }
     }
 }
